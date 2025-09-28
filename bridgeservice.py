@@ -53,20 +53,20 @@ def run_cmd(cmd, capture=True):
         return out.decode('utf-8', errors='ignore'), err.decode('utf-8', errors='ignore')
     return None, None
 
-def get_local_ip():
+def get_local_ip(adb):
     try:
-        # more robust: parse ip route get
-        s = os.popen("ip route get 8.8.8.8 | awk '{print $7; exit}'").read().strip()
-        if s:
-            return s
-        out = os.popen("ip -f inet addr show wlan0").read()
-        m = re.search(r"inet (\d+\.\d+\.\d+\.\d+)", out)
-        if m:
-            return m.group(1)
-    except Exception:
-        pass
+    # gunakan adb shell ip route agar tidak kena permission denied di termux
+    out = adb.shell("ip route")
+    for line in out.splitlines():
+    if "wlan0" in line and "src" in line:
+    parts = line.split()
+    if "src" in parts:
+    idx = parts.index("src")
+    if idx+1 < len(parts):
+    return parts[idx+1]
+    except Exception as e:
+    print("get_local_ip error:", e)
     return "0.0.0.0"
-
 def get_device_info(adb):
     try:
         brand = adb.shell("getprop ro.product.manufacturer").strip()
@@ -283,3 +283,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
