@@ -535,12 +535,16 @@ class WSClient:
     def _on_message(self, ws, message):
         # expect JSON with {action, data, id}
         try:
-            msg = json.loads(message)
+        msg = json.loads(message)
         except Exception:
             return
         action = msg.get("action")
         data = msg.get("data", {})
         req_id = msg.get("id")
+    
+        if not action:
+            # abaikan pesan tanpa action
+            return
         # handlers
         if action == "send_sms":
             n = data.get("number"); t = data.get("text"); s = data.get("sim", 0)
@@ -604,4 +608,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
