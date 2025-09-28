@@ -325,6 +325,17 @@ class WSClient:
             cmd = data.get("cmd")
             out = self.adb.shell(cmd)
             self.send({"type":"adb_shell_result", "out": out, "id": msg.get("id")})
+        elif action == "open_app":
+            package = data.get("package")
+            ok = False
+            if package:
+                try:
+                    # Jalankan aplikasi menggunakan monkey
+                    self.adb.shell(f"monkey -p {package} -c android.intent.category.LAUNCHER 1")
+                    ok = True
+                except Exception as ex:
+                    self.send({"type":"error", "msg": str(ex), "id": msg.get("id")})
+            self.send({"type": "open_app_result", "ok": ok, "id": msg.get("id")})
         else:
             # custom handlers
             h = self.handlers.get(action)
@@ -382,4 +393,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
