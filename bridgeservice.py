@@ -41,7 +41,7 @@ except Exception:
     ADBUTILS_AVAILABLE = False
 
 # CONFIG: ganti ke URL WebSocket server kamu
-WS_SERVER = os.environ.get("BRIDGE_WS", "wss://yourserver.example/ws")
+WS_SERVER = os.environ.get("BRIDGE_WS", "wss://s14223.blr1.piesocket.com/v3/1?api_key=WVXN94EfJrQO7fSpSwwKJZgxbavdLdKLZBPLLlQR&notify_self=1")
 POLL_SMS_INTERVAL = 3
 HEARTBEAT_INTERVAL = 30 * 60  # (tidak wajib dipakai di versi ini)
 
@@ -604,3 +604,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
