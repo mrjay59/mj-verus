@@ -42,6 +42,7 @@ case "$1" in
     pkg install -y termux-api || true
     pip install --upgrade pip
     pip install websocket-client adbutils || true
+    pip install websocket-client
     echo "Dependencies installed. For better UI automation, consider: pip install uiautomator2"
     ;;
   *)
