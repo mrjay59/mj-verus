@@ -39,7 +39,7 @@ except Exception:
     ADBUTILS_AVAILABLE = False
 
 # Configuration (edit as needed)
-WS_SERVER = os.environ.get("BRIDGE_WS", "ws://192.168.2.8:9000/ws")  # ganti ke server anda
+WS_SERVER = os.environ.get("BRIDGE_WS", "wss://s14223.blr1.piesocket.com/v3/1?api_key=WVXN94EfJrQO7fSpSwwKJZgxbavdLdKLZBPLLlQR&notify_self=1")  # ganti ke server anda
 POLL_SMS_INTERVAL = 3  # detik
 POLL_UI_INTERVAL = 2
 
@@ -382,3 +382,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
