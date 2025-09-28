@@ -2,7 +2,7 @@
 # bridgeservice.sh
 # Simple installer / starter for bridgeservice.py in Termux
 
-BASE_DIR="$HOME/bridgeservice"
+BASE_DIR="$HOME/mj-verus"
 PY="$PREFIX/bin/python"
 PIP="$PREFIX/bin/pip"
 
@@ -14,7 +14,7 @@ PYCODE
 cat > "$BASE_DIR/run.sh" <<'RUNSH'
 #!/data/data/com.termux/files/usr/bin/sh
 # wrapper to keep the service running
-cd "$HOME/bridgeservice"
+cd "$HOME/mj-verus"
 termux-wake-lock
 nohup python bridgeservice.py >> bridgeservice.log 2>&1 &
 echo "bridgeservice started (logs: $HOME/bridgeservice/bridgeservice.log)"
