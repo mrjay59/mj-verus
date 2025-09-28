@@ -44,6 +44,35 @@ POLL_SMS_INTERVAL = 3  # detik
 POLL_UI_INTERVAL = 2
 
 # --- Utilities ---
+def get_imei(adb, slot=0):
+    try:
+        # service call iphonesubinfo 1 → SIM1, 2 → SIM2
+        out = adb.shell(f"service call iphonesubinfo {1 + slot}").strip()
+        import re
+        matches = re.findall(r"'(.*?)'", out)
+        imei = "".join(matches).replace(".", "").replace(" ", "")
+        return imei if imei else None
+    except Exception:
+        return None
+
+def get_sim_info(adb, slot=0):
+    info = {}
+    try:
+        # ambil telephony info
+        out = adb.shell(f"dumpsys telephony.registry | grep mSimSlotIndex={slot} -A 20")
+
+        import re
+        m_op = re.search(r"operatorAlphaLong=([^\s]+)", out)
+        m_num = re.search(r"mLine1Number=([^\s]+)", out)
+
+        if m_op:
+            info["operator"] = m_op.group(1)
+        if m_num:
+            info["number"] = m_num.group(1)
+    except Exception:
+        pass
+    return info
+    
 def run_cmd(cmd, capture=True, check=False):
     if isinstance(cmd, (list, tuple)):
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE if capture else None,
@@ -345,10 +374,33 @@ class WSClient:
                 except Exception as ex:
                     self.send({"type":"error", "msg": str(ex), "id": msg.get("id")})
 
-    def _on_open(self, ws):
-        print("WS connected to", self.url)
-        # register as bridge
-        self.send({"type":"bridge_hello", "id": str(uuid.uuid4()), "info":{"platform":"termux"}})
+   def _on_open(self, ws):
+    print("WS connected to", self.url)
+
+    device_info = get_device_info(self.adb)
+    ip_local = get_local_ip()
+
+    sim1 = {
+        "imei": get_imei(self.adb, 0),
+        **get_sim_info(self.adb, 0)
+    }
+    sim2 = {
+        "imei": get_imei(self.adb, 1),
+        **get_sim_info(self.adb, 1)
+    }
+
+    profile = {
+        "platform": "termux",
+        "device": device_info,
+        "ip_local": ip_local,
+        "sims": [sim1, sim2]
+    }
+
+    self.send({
+        "type": "bridge_hello",
+        "id": str(uuid.uuid4()),
+        "info": profile
+    })
 
     def _on_close(self, ws, close_status_code, close_msg):
         print("WS closed", close_status_code, close_msg)
@@ -393,5 +445,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
